@@ -27,18 +27,14 @@ export interface CreateDeviceApiKeyParams {
 /**
  * 根据序列号查询设备密钥
  */
-export const findApiKeyBySerial = async (
-  serialNumber: string
-): Promise<DeviceApiKeyRow | null> => {
+export const findApiKeyBySerial = async (serialNumber: string): Promise<DeviceApiKeyRow | null> => {
   return prisma.deviceApiKey.findUnique({ where: { serial_number: serialNumber } })
 }
 
 /**
  * 根据设备ID查询设备密钥
  */
-export const findApiKeyByDeviceId = async (
-  deviceId: string
-): Promise<DeviceApiKeyRow | null> => {
+export const findApiKeyByDeviceId = async (deviceId: string): Promise<DeviceApiKeyRow | null> => {
   return prisma.deviceApiKey.findUnique({ where: { device_id: deviceId } })
 }
 
@@ -70,8 +66,6 @@ export const updateDeviceApiKey = async (
 /**
  * 删除设备密钥记录（设备解绑或失效处理）
  */
-export const deleteDeviceApiKeyByDeviceId = async (
-  deviceId: string
-): Promise<DeviceApiKeyRow> => {
+export const deleteDeviceApiKeyByDeviceId = async (deviceId: string): Promise<DeviceApiKeyRow> => {
   return prisma.deviceApiKey.delete({ where: { device_id: deviceId } })
 }
