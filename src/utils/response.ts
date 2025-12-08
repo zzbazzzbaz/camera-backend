@@ -1,5 +1,6 @@
 import { Response } from 'express'
 
+// 响应封装：统一格式/错误码
 export class ApiResponse {
   static success<T>(res: Response, data: T, message = '成功') {
     return res.json({

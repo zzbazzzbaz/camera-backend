@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000
 
 const start = async () => {
   try {
-    // 测试数据库连接
+    // 启动前确认数据库连通
     await testPrismaConnection()
 
     // 启动服务器

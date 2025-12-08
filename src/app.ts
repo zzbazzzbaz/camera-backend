@@ -7,7 +7,7 @@ dotenv.config()
 
 const app = express()
 
-// 中间件
+// 基础中间件：解析请求体并记录请求
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(loggerMiddleware)
@@ -20,7 +20,7 @@ app.get('/health', (req, res) => {
 // 路由（后续添加）
 // app.use('/api', routes)
 
-// 错误处理
+// 统一错误处理
 app.use(errorMiddleware)
 
 export default app

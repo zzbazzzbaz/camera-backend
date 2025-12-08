@@ -1,16 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 
-declare global {
-  // eslint-disable-next-line no-var, vars-on-top
-  var prisma: PrismaClient | undefined
-}
+// 单例 Prisma 客户端
+export const prisma = new PrismaClient()
 
-export const prisma = global.prisma || new PrismaClient()
-
-if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma
-}
-
+// 启动时快速探测数据库连通性
 export const testPrismaConnection = async () => {
   try {
     await prisma.$queryRaw`SELECT 1`

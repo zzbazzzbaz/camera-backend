@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from 'express'
 import { ApiResponse, ErrorCode } from '../utils/response'
 
 export const errorMiddleware = (err: Error, req: Request, res: Response, _next: NextFunction) => {
+  // 保留服务端日志便于排查
   console.error('错误:', err)
 
+  // 业务错误映射为统一响应
   if (err.message === '设备已绑定') {
     return ApiResponse.error(res, ErrorCode.DEVICE_ALREADY_BOUND, err.message)
   }
