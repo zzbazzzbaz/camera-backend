@@ -13,3 +13,18 @@ export const testPrismaConnection = async () => {
     process.exit(1)
   }
 }
+
+// 优雅关闭：进程退出时断开数据库连接
+process.on('beforeExit', async () => {
+  await prisma.$disconnect()
+})
+
+process.on('SIGINT', async () => {
+  await prisma.$disconnect()
+  process.exit(0)
+})
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect()
+  process.exit(0)
+})
