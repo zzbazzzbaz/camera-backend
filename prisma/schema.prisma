@@ -1,0 +1,100 @@
+// Prisma schema aligned with src/models definitions
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id    String   @id @db.VarChar(32)
+  openid     String   @unique @db.VarChar(64)
+  union_id   String?  @db.VarChar(64)
+  nickname   String?  @db.VarChar(64)
+  avatar_url String?  @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  bindings UserDeviceBinding[]
+
+  @@index([openid], name: "idx_openid")
+  @@index([union_id], name: "idx_union_id")
+  @@map("users")
+}
+
+model Device {
+  device_id         String    @id @db.VarChar(32)
+  serial_number     String    @unique @db.VarChar(64)
+  first_upload_time DateTime? @db.Timestamp(0)
+  last_upload_time  DateTime? @db.Timestamp(0)
+  photo_count       Int       @default(0)
+  status            Int       @default(1)
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  bindings   UserDeviceBinding[]
+  photos     Photo[]
+  credential DeviceApiKey?       @relation("DeviceCredential")
+
+  @@index([serial_number], name: "idx_serial_number")
+  @@index([status], name: "idx_status")
+  @@index([last_upload_time], name: "idx_last_upload_time")
+  @@map("devices")
+}
+
+model UserDeviceBinding {
+  binding_id  String   @id @db.VarChar(32)
+  user_id     String   @db.VarChar(32)
+  device_id   String   @db.VarChar(32)
+  device_name String   @default("相机设备") @db.VarChar(64)
+  bind_time   DateTime @default(now())
+  is_owner    Int      @default(0)
+
+  user   User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  device Device @relation(fields: [device_id], references: [device_id], onDelete: Cascade)
+
+  @@unique([user_id, device_id], name: "uk_user_device")
+  @@index([user_id], name: "idx_user_id")
+  @@index([device_id], name: "idx_device_id")
+  @@map("user_device_bindings")
+}
+
+model Photo {
+  photo_id      String    @id @db.VarChar(32)
+  device_id     String    @db.VarChar(32)
+  oss_key       String    @db.VarChar(255)
+  thumbnail_key String?   @db.VarChar(255)
+  file_size     BigInt?   @db.BigInt
+  width         Int?
+  height        Int?
+  format        String?   @db.VarChar(10)
+  upload_time   DateTime  @default(now())
+  is_deleted    Int       @default(0)
+  deleted_at    DateTime?
+
+  device Device @relation(fields: [device_id], references: [device_id], onDelete: Cascade)
+
+  @@index([device_id], name: "idx_device_id")
+  @@index([upload_time], name: "idx_upload_time")
+  @@index([is_deleted], name: "idx_is_deleted")
+  @@index([device_id, upload_time, is_deleted], name: "idx_device_upload")
+  @@map("photos")
+}
+
+model DeviceApiKey {
+  credential_id String   @id @db.VarChar(32)
+  device_id     String   @unique @db.VarChar(32)
+  serial_number String   @unique @db.VarChar(64)
+  api_key       String   @db.VarChar(255)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  device Device @relation("DeviceCredential", fields: [device_id], references: [device_id], onDelete: Cascade)
+
+  @@index([serial_number], name: "idx_dak_serial_number")
+  @@index([device_id], name: "idx_dak_device_id")
+  @@map("device_api_keys")
+}

@@ -8,9 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev --name init"
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
