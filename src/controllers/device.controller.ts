@@ -4,6 +4,7 @@ import { ApiResponse, ErrorCode } from '../utils/response'
 import { findDeviceBySerialNumber, createDevice, DeviceStatus } from '../models/device.model'
 import { findBinding, createBinding } from '../models/binding.model'
 import { prisma } from '../utils/prisma'
+import { countPhotosByDevice } from '../models/photo.model'
 
 const normalizeSerial = (serial: string) => serial.trim().toUpperCase()
 const serialRegex = /^CAM-[A-Z0-9-]{5,}$/
@@ -19,18 +20,23 @@ export const getDeviceList = async (req: Request, res: Response) => {
     include: { device: true }
   })
 
-  const devices = bindings.map(b => ({
-    binding_id: b.binding_id,
-    device_id: b.device_id,
-    serial_number: b.device?.serial_number ?? '',
-    device_name: b.device_name,
-    is_owner: b.is_owner,
-    status: b.device?.status ?? 0,
-    photo_count: b.device?.photo_count ?? 0,
-    first_upload_time: b.device?.first_upload_time,
-    last_upload_time: b.device?.last_upload_time,
-    bind_time: b.bind_time
-  }))
+  const devices = await Promise.all(
+    bindings.map(async b => {
+      const photoCount = await countPhotosByDevice(b.device_id, false)
+      return {
+        binding_id: b.binding_id,
+        device_id: b.device_id,
+        serial_number: b.device?.serial_number ?? '',
+        device_name: b.device_name,
+        is_owner: b.is_owner,
+        status: b.device?.status ?? 0,
+        photo_count: photoCount, // 仅统计未删除照片
+        first_upload_time: b.device?.first_upload_time,
+        last_upload_time: b.device?.last_upload_time,
+        bind_time: b.bind_time
+      }
+    })
+  )
 
   return ApiResponse.success(res, { devices })
 }

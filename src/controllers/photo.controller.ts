@@ -16,7 +16,7 @@ export const listPhotos = async (req: Request, res: Response) => {
   const userId = req.user?.userId
   if (!userId) return ApiResponse.error(res, ErrorCode.UNAUTHORIZED, '未授权')
 
-  const { device_id, page = 1, page_size = 20, include_deleted } = req.query
+  const { device_id, page = 1, page_size = 20 } = req.query
 
   if (!device_id || typeof device_id !== 'string') {
     return ApiResponse.error(res, ErrorCode.BAD_REQUEST, 'device_id 必填')
@@ -24,8 +24,7 @@ export const listPhotos = async (req: Request, res: Response) => {
 
   const pageNum = Math.max(1, Number(page) || 1)
   const pageSizeNum = Math.min(MAX_PAGE_SIZE, Math.max(1, Number(page_size) || 20))
-  const includeDeleted =
-    typeof include_deleted !== 'undefined' && String(include_deleted).toLowerCase() === 'true'
+  const includeDeleted = false // 仅返回未删除图片
 
   const binding = await findBinding(userId, device_id)
   if (!binding) return ApiResponse.error(res, ErrorCode.FORBIDDEN, '无权限访问该设备')

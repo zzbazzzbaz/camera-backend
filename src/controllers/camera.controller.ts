@@ -2,13 +2,11 @@ import { Request, Response } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import sharp from 'sharp'
 import { ApiResponse, ErrorCode } from '../utils/response'
-import { findApiKeyBySerial, createDeviceApiKey } from '../models/deviceApiKey.model'
+import { findApiKeyBySerial } from '../models/deviceApiKey.model'
 import {
   findDeviceBySerialNumber,
-  createDevice,
   updateDeviceUploadMeta,
-  incrementDevicePhotoCount,
-  DeviceStatus
+  incrementDevicePhotoCount
 } from '../models/device.model'
 import { createPhoto } from '../models/photo.model'
 import { putObject } from '../utils/oss'
@@ -29,8 +27,8 @@ export const uploadFromCamera = async (req: Request, res: Response) => {
     return ApiResponse.error(res, ErrorCode.UNAUTHORIZED, '缺少设备 API Key')
   }
 
-  let device = await findDeviceBySerialNumber(serial)
-  let credential = await findApiKeyBySerial(serial)
+  const device = await findDeviceBySerialNumber(serial)
+  const credential = await findApiKeyBySerial(serial)
 
   if (!device || !credential || credential.api_key !== apiKey) {
     return ApiResponse.error(res, ErrorCode.UNAUTHORIZED, '设备认证失败')
