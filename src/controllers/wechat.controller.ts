@@ -41,6 +41,9 @@ export const wechatLogin = async (req: Request, res: Response) => {
       }
     )
 
+    // 打印微信接口返回的完整响应对象
+    console.log('微信登录响应:', JSON.stringify(wxResp.data, null, 2))
+
     const wxData = wxResp.data
 
     if (wxData.errcode) {

@@ -32,22 +32,7 @@ export const uploadFromCamera = async (req: Request, res: Response) => {
   let device = await findDeviceBySerialNumber(serial)
   let credential = await findApiKeyBySerial(serial)
 
-  if (!device) {
-    device = await createDevice({
-      device_id: uuidv4().replace(/-/g, ''),
-      serial_number: serial,
-      status: DeviceStatus.Active
-    })
-  }
-
-  if (!credential) {
-    credential = await createDeviceApiKey({
-      credential_id: uuidv4().replace(/-/g, ''),
-      device_id: device.device_id,
-      serial_number: serial,
-      api_key: apiKey
-    })
-  } else if (credential.api_key !== apiKey) {
+  if (!device || !credential || credential.api_key !== apiKey) {
     return ApiResponse.error(res, ErrorCode.UNAUTHORIZED, '设备认证失败')
   }
 
