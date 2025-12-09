@@ -8,6 +8,7 @@ import {
   softDeletePhoto
 } from '../models/photo.model'
 import { signUrl } from '../utils/oss'
+import { nowCST } from '../utils/time'
 
 const MAX_PAGE_SIZE = 100
 
@@ -100,7 +101,7 @@ export const deletePhotos = async (req: Request, res: Response) => {
   return ApiResponse.success(res, {
     deleted_ids: deletedIds,
     failed,
-    deleted_at: new Date()
+    deleted_at: nowCST()
   })
 }
 

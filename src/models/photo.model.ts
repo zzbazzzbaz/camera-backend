@@ -1,5 +1,6 @@
 import { Photo } from '@prisma/client'
 import { prisma } from '../utils/prisma'
+import { nowCST } from '../utils/time'
 
 /**
  * 照片模型 - 对应 photos 表
@@ -138,7 +139,7 @@ export const listPhotosByDevice = async (
 export const softDeletePhoto = async (photoId: string): Promise<PhotoRow> => {
   return prisma.photo.update({
     where: { photo_id: photoId },
-    data: { is_deleted: 1, deleted_at: new Date() }
+    data: { is_deleted: 1, deleted_at: nowCST() }
   })
 }
 

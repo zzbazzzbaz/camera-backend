@@ -10,6 +10,7 @@ import {
 } from '../models/device.model'
 import { createPhoto } from '../models/photo.model'
 import { putObject } from '../utils/oss'
+import { nowCST } from '../utils/time'
 
 const normalizeSerial = (serial: string) => serial.trim().toUpperCase()
 
@@ -41,7 +42,7 @@ export const uploadFromCamera = async (req: Request, res: Response) => {
 
   const ext = (req.body?.format as string) || file.mimetype.split('/')[1] || 'jpg'
   const photoId = uuidv4().replace(/-/g, '')
-  const now = new Date()
+  const now = nowCST()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const ossKey = `${device.device_id}/${year}/${month}/${photoId}.${ext}`
